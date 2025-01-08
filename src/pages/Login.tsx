@@ -20,7 +20,7 @@ const Login = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="px-4 mx-4">
         <div className="flex flex-col gap-2 mt-6">
           <label htmlFor="email" className="font-nunito text-xl">
-            Username or Email
+           Email
           </label>
 
           <input
@@ -28,7 +28,7 @@ const Login = () => {
             type="email"
             {...register("email", { required: "Email is required" })}
             className="rounded-md h-12 pl-4 focus:border-gray-400 border-2 focus:outline-none text-sm"
-            placeholder="Enter your email or username"
+            placeholder="Enter your email address"
           />
           {errors.email && (
             <p className="text-red-500">{errors.email.message}</p>
