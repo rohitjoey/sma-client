@@ -1,27 +1,38 @@
+import { registerUserApi, UserRegisterInputData } from "@/api/users";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import { UserResponse } from "@/lib/typedef";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
-
-enum GenderEnum {
-  female = "female",
-  male = "male",
-  other = "other",
-}
-
-interface IFormInput {
-  fullName: string;
-  gender: GenderEnum;
-  userName: string;
-  email: string;
-  password: string;
-}
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+  } = useForm<UserRegisterInputData>();
+
+  const { data, isSuccess, isPending, mutate } = useMutation({
+    mutationFn: registerUserApi,
+    onSuccess: (sucessData: UserResponse) => {
+      localStorage.setItem("token", sucessData.token);
+      login(sucessData);
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onSubmit: SubmitHandler<UserRegisterInputData> = (registerUserData) => {
+    mutate(registerUserData);
+  };
+  // console.log(data);
 
   return (
     <div className="bg-teal-200 flex  justify-start flex-col w-4/12 h-max rounded-lg">
@@ -46,7 +57,10 @@ const Register = () => {
           <label htmlFor="gender" className="font-nunito text-xl">
             Gender Selection
           </label>
-          <select {...register("gender")}  className="rounded-md h-12 pl-4 focus:border-gray-400 border-2 focus:outline-none text-sm">
+          <select
+            {...register("gender")}
+            className="rounded-md h-12 pl-4 focus:border-gray-400 border-2 focus:outline-none text-sm"
+          >
             <option value="female">Female</option>
             <option value="male">Male</option>
             <option value="other">Other</option>
@@ -91,11 +105,12 @@ const Register = () => {
           type="submit"
           className="rounded-xl mb-4"
           size={"lg"}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPending}
         >
-          {isSubmitting ? "Logging in..." : "Register"}
+          {isSubmitting || isPending ? "Creating Account" : "Register"}
         </Button>
       </form>
+      <Toaster position="bottom-right" />
     </div>
   );
 };

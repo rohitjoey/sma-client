@@ -1,5 +1,11 @@
+import { LoginInputData, loginUserApi } from "@/api/users";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import { UserResponse } from "@/lib/typedef";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 interface IFormInput {
   email: string;
@@ -12,7 +18,25 @@ const Login = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const { data, isSuccess, isPending, mutate } = useMutation({
+    mutationFn: loginUserApi,
+    onSuccess: (sucessData: UserResponse) => {
+      localStorage.setItem("token", sucessData.token);
+      login(sucessData);
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onSubmit: SubmitHandler<LoginInputData> = (formInput) => {
+    mutate(formInput);
+  };
 
   return (
     <div className="bg-teal-200 flex  justify-start flex-col w-4/12 h-max rounded-lg">
@@ -20,7 +44,7 @@ const Login = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="px-4 mx-4">
         <div className="flex flex-col gap-2 mt-6">
           <label htmlFor="email" className="font-nunito text-xl">
-           Email
+            Email
           </label>
 
           <input
@@ -66,6 +90,7 @@ const Login = () => {
       >
         Forgot password?
       </a>
+      <Toaster position="bottom-right" />
     </div>
   );
 };
