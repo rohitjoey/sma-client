@@ -1,18 +1,30 @@
+import { getUserData } from "@/api/users";
+import { useAuth } from "@/context/auth";
+import { User } from "@/lib/typedef";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./button";
-import { useAuth } from "@/context/auth";
 
 const NavBar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const { user, logout } = useAuth();
 
+  const { data: userData, isLoading } = useQuery<User>({
+    queryKey: ["userData", user?.userId],
+    queryFn: () => getUserData(user?.userId!),
+    enabled: !!user?.userId, // Only run query if user exists
+    retry: true,
+  });
+
   return (
     <div className="bg-teal-500 py-4 flex justify-between px-4">
       <div className="ml-6">
         <p className="font-sans text-xl">
           <Link to={user.isAuthenticated ? "/dashboard" : "/"}>
-            Social Media APP
+            {isLoading || !userData
+              ? "Social Media APP"
+              : `Welcome, ${userData?.fullname}`}
           </Link>
         </p>
       </div>

@@ -5,7 +5,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useReducer,
+  useReducer
 } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -41,7 +41,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN":
       return {
-        ...state,
         user: {
           userId: action.payload.userId,
           isAuthenticated: true,
@@ -49,7 +48,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       };
     case "LOGOUT":
       return {
-        ...state,
         user: { userId: undefined, isAuthenticated: false },
       };
     case "INITIALIZE":
@@ -87,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = (userData: UserResponse) => {
     localStorage.setItem("token", userData.token);
-    dispatch({ type: "LOGIN", payload: { userId: userData.id } });
+    dispatch({ type: "LOGIN", payload: { userId: userData.user.id } });
   };
 
   const logout = () => {

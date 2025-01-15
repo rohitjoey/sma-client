@@ -14,7 +14,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
+            <Route index element={<AuthRedirectRoute element={<Home />} />} />
             <Route
               path="/login"
               element={<AuthRedirectRoute element={<Login />} />}

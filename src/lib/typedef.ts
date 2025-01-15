@@ -11,13 +11,13 @@ export enum GenderEnum {
     other = "other",
 }
 
-export type User = {
-    fullName: string;
+export interface User extends BaseType  {
+    fullname: string;
     gender: GenderEnum;
     email: string;
 };
 
-export interface UserResponse extends BaseType {
+export interface UserResponse {
     user: User;
     token: string;
 }

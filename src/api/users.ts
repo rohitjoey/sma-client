@@ -19,3 +19,6 @@ export const registerUserApi = (registerData: UserRegisterInputData) =>
 
 export const loginUserApi = (loginData: LoginInputData) =>
     apiRequest(api.post("/users/login", loginData));
+
+export const getUserData = (userId: string) =>
+    apiRequest(api.get(`/users/${userId}`)); //TODO add headers

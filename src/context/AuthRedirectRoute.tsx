@@ -6,8 +6,6 @@ export const AuthRedirectRoute: React.FC<{ element: JSX.Element }> = ({
 }) => {
   const { user } = useAuth();
 
-  console.log(user)
-
   if (user.isAuthenticated) {
     return <Navigate to="/dashboard" />;
   }
