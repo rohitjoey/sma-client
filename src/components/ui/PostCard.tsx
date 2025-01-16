@@ -46,7 +46,7 @@ const PostCard = () => {
             </svg>
             <span>8</span>
           </div>
-          <div className="flex mr-2 text-gray-700 text-sm mr-4">
+          <div className="flex mr-2 text-gray-700 text-sm">
             <svg
               fill="none"
               viewBox="0 0 24 24"
