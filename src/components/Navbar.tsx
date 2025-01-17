@@ -3,7 +3,7 @@ import { useAuth } from "@/context/auth";
 import { User } from "@/lib/typedef";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 
 const NavBar = () => {
   const location = useLocation();

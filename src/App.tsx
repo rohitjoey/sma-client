@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./context/ProtectedRoute";
 import { AuthRedirectRoute } from "./context/AuthRedirectRoute";
+import ChatPage from "./pages/ChatPage";
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/chat-screen" element={<ChatPage />} />
+            </Route>
+            ChatPage
           </Route>
         </Routes>
       </AuthProvider>
