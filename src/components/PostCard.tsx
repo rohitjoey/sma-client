@@ -1,17 +1,28 @@
-const PostCard = () => {
+import { PostResponse } from "@/lib/typedef";
+import { format, formatDistance } from "date-fns";
+import DOMPurify from "dompurify";
+import parse from "html-react-parser";
+
+const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
+  console.log(cardProp.content);
+  const sanitizedData = DOMPurify.sanitize(cardProp.content);
+  console.log(parse(sanitizedData));
   return (
     <div className="bg-teal-100 border-2 shadow-lg rounded-lg max-w-md md:max-w-2xl p-5 h-max">
       <div className="">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900 -mt-1">
-            Brad Adams{" "}
-          </h2>
-          <small className="text-sm text-gray-700">22h ago</small>
+        <div dangerouslySetInnerHTML={{ __html: sanitizedData }} />
+          <div className="px-4 text-sm text-gray-700">
+            {formatDistance(cardProp.createdAt, new Date(), {
+              addSuffix: true,
+            })}
+          </div>
         </div>
-        <p className="text-gray-700">Joined 12 SEP 2012. </p>
-        <p className="mt-3 text-gray-700 text-sm">
-          Lorem ipsum, dolor sit amet conse. Saepe optio minus rem dolor sit
-          amet!
+        <p className="mt-3 text-gray-700 text-md">
+          <span className="text-xs">PostedBy</span>:{cardProp.User.fullname}
+        </p>
+        <p className="text-gray-700 text-xs">
+          Joined {format(cardProp.User.createdAt, "do MMM yyyy")}
         </p>
         <div className="mt-4 flex items-center">
           <div className="flex mr-2 text-gray-700 text-sm">
@@ -28,9 +39,9 @@ const PostCard = () => {
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
             </svg>
-            <span>12</span>
+            <span>{cardProp.likesCount}</span>
           </div>
-          <div className="flex mr-2 text-gray-700 text-sm">
+          {/* <div className="flex mr-2 text-gray-700 text-sm">
             <svg
               fill="none"
               viewBox="0 0 24 24"
@@ -61,7 +72,7 @@ const PostCard = () => {
               />
             </svg>
             <span>share</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

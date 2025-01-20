@@ -1,23 +1,28 @@
-
 export type BaseType = {
-    id: string;
-    createdAt: Date
-    updatedAt: Date
-}
-
-export enum GenderEnum {
-    female = "female",
-    male = "male",
-    other = "other",
-}
-
-export interface User extends BaseType  {
-    fullname: string;
-    gender: GenderEnum;
-    email: string;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
+export enum GenderEnum {
+  female = "female",
+  male = "male",
+  other = "other",
+}
+
+export interface User extends BaseType {
+  fullname: string;
+  gender: GenderEnum;
+  email: string;
+}
+
 export interface UserResponse {
-    user: User;
-    token: string;
+  user: User;
+  token: string;
+}
+
+export interface PostResponse extends BaseType {
+  content: string;
+  likesCount: number;
+  User: User;
 }
