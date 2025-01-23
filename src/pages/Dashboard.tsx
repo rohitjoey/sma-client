@@ -50,7 +50,7 @@ const Dashboard = () => {
             data.map((post) => <PostCard key={post.id} cardProp={post} />)}
           {data && data.length >= 10 ? <PostCardLoadMore /> : null}
           <div className="flex gap-6 w-max">
-            <CreatePost />
+            <CreatePost isCreate={true} postContent="" />
             <Button
               onClick={() => navigate("/chat-screen")}
               className="h-32 bg-teal-100 text-black *:hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl "

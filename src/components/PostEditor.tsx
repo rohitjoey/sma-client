@@ -1,4 +1,9 @@
-import { createPostApi, PostInputData } from "@/api/posts";
+import {
+  createPostApi,
+  PostInputData,
+  updatePostApi,
+  UpdatePostInputData,
+} from "@/api/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -9,17 +14,23 @@ import { Input } from "./ui/input";
 const PostEditor = ({
   isDialogOpen,
   setIsDialogOpen,
+  initialContent,
+  isCreate,
+  postId,
 }: {
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
+  initialContent: string;
+  isCreate: boolean;
+  postId?: string;
 }) => {
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(initialContent);
 
   // const extensions = [StarterKit];
   // const contentT = "<p>Hello World!</p>";
   const queryClient = useQueryClient();
 
-  const { isPending, data, isSuccess, mutate, error } = useMutation({
+  const { isPending, mutate: createPostMutation } = useMutation({
     mutationKey: ["createPost"],
     mutationFn: (content: PostInputData) => createPostApi(content),
     onSuccess: () => {
@@ -27,28 +38,60 @@ const PostEditor = ({
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
 
-    onError: (error) => {
-      if (Array.isArray(error.message)) {
-        error.message.forEach(({ message }) => toast.error(message));
-      } else if (typeof error.message === "string") {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
-        console.error("Unexpected error structure:", error);
-      }
+    onError: (error: any) => {
+      handleMutationError(error);
     },
   });
+
+  const { isPending: isUpdatePending, mutate: updatePostMutation } =
+    useMutation({
+      mutationKey: ["updatePostContent"],
+      mutationFn: (updatePostData: UpdatePostInputData) =>
+        updatePostApi({
+          content: updatePostData.content,
+          id: updatePostData.id,
+        }),
+      onSuccess: () => {
+        toast.success("Post updated successfully");
+        // queryClient.invalidateQueries({ queryKey: ["posts"] });
+      },
+      onError: (error: any) => {
+        handleMutationError(error);
+      },
+    });
+
+  const handleMutationError = (error: any) => {
+    if (Array.isArray(error.message)) {
+      error.message.forEach(({ message }: { message: string }) =>
+        toast.error(message)
+      );
+    } else if (typeof error.message === "string") {
+      toast.error(error.message);
+    } else {
+      toast.error("An unexpected error occurred.");
+      console.error("Unexpected error structure:", error);
+    }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
   };
 
   const handleSave = () => {
-    console.log("Content saved:", content);
-    mutate({ content });
+    if (isCreate) {
+      // Call create mutation
+      createPostMutation({ content });
+    } else {
+      // Call update mutation (postId is required for updates)
+      if (!postId) {
+        toast.error("Post ID is required to update the post.");
+        return;
+      }
+      updatePostMutation({ id: postId, content });
+    }
     setIsDialogOpen(false);
-    // Add your logic to save the content to a database or API
   };
+
   // const modules = {
   //   toolbar: [
   //     [{ size: [] }],
@@ -63,9 +106,17 @@ const PostEditor = ({
   return (
     <div className="flex justify-center flex-col items-end">
       <div className="w-[100%] flex justify-center items-center flex-col mb-4">
-        <Input placeholder="Write something unique" onChange={handleChange} />
+        <Input
+          placeholder="Write something unique"
+          onChange={handleChange}
+          defaultValue={content}
+        />
       </div>
-      <Button onClick={handleSave} type="submit" disabled={isPending}>
+      <Button
+        onClick={handleSave}
+        type="submit"
+        disabled={isPending || isUpdatePending}
+      >
         Save changes
       </Button>
     </div>

@@ -9,26 +9,48 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import PostEditor from "./PostEditor";
+import { Edit } from "lucide-react";
 
-export function CreatePost() {
+export function CreatePost({
+  isCreate,
+  postContent,
+  postId,
+}: {
+  isCreate: boolean;
+  postContent: string;
+  postId?: string;
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="h-32 bg-teal-100 text-black hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl">
-          Create Post
-        </Button>
+        {isCreate ? (
+          <Button className="h-32 bg-teal-100 text-black hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl">
+            Create post
+          </Button>
+        ) : (
+          <Button className="h-3 w-3 hover:bg-transparent" variant={"ghost"}>
+            <Edit className="stroke-red-500" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-[100%]">
         <DialogHeader>
-          <DialogTitle>Create a post</DialogTitle>
+          <DialogTitle>
+            {isCreate ? "Create a post" : "Update Post"}
+          </DialogTitle>
           <DialogDescription>
-            Create a new post to make it available to dashboard.
+            {isCreate
+              ? "Create a new post to make it available to dashboard."
+              : "Update your post"}
           </DialogDescription>
         </DialogHeader>
         <PostEditor
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
+          initialContent={isCreate ? "" : postContent}
+          isCreate={isCreate}
+          postId={postId}
         />
       </DialogContent>
     </Dialog>

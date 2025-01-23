@@ -1,12 +1,15 @@
 import { PostResponse } from "@/lib/typedef";
 import { format, formatDistance } from "date-fns";
-import { Heart, Trash } from "lucide-react";
+import { Edit, Heart, Trash } from "lucide-react";
 import { Button } from "./ui/button";
-import { useMutation } from "@tanstack/react-query";
-import {  deletePostApi, updatePostApi, UpdatePostInputData } from "@/api/posts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deletePostApi, updatePostApi, UpdatePostInputData } from "@/api/posts";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/auth";
+import { CreatePost } from "./CreatePost";
 
 const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
+  const queryClient = useQueryClient();
   const {
     isPending,
     error,
@@ -16,22 +19,45 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
     mutationKey: ["updateAPost"],
     mutationFn: (updatePostData: UpdatePostInputData) =>
       updatePostApi(updatePostData),
-    onError:()=>{
-      toast.error("Error while updating post")
-    }
+    onMutate: async ({ id: postId }) => {
+      await queryClient.cancelQueries({ queryKey: "posts" });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData<PostResponse[]>(["posts"]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData<PostResponse[]>(["posts"], (oldPosts) =>
+        oldPosts?.map((post) =>
+          post.id === postId
+            ? { ...post, likesCount: post.likesCount + 1 }
+            : post
+        )
+      );
+
+      // Return a context object with the snapshot value
+      return { previousPosts };
+    },
+    onError: (err, { id: postId }, context) => {
+      if (context?.previousPosts) {
+        queryClient.setQueryData(["posts"], context.previousPosts);
+      }
+
+      toast.error("Error while updating post");
+    },
   });
 
-  const {
-    isPending:isDeletePending,
-    mutate: deleteSinglePost,
-  } = useMutation({
+  const { isPending: isDeletePending, mutate: deleteSinglePost } = useMutation({
     mutationKey: ["deleteAPost"],
-    mutationFn: (id: string) =>
-      deletePostApi(id),
-    onError:()=>{
-      toast.error("Error while deleting post")
-    }
+    mutationFn: (id: string) => deletePostApi(id),
+    onSuccess: () => {
+      toast.success("Post deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {
+      toast.error("Error while deleting post");
+    },
   });
+  const { user } = useAuth();
 
   return (
     <div className="bg-teal-100 border-2 shadow-lg rounded-lg max-w-md md:max-w-2xl p-5 h-max">
@@ -77,14 +103,23 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
               />
             </svg> */}
 
-            <Button
-              className="h-3 w-3 hover:bg-transparent"
-              variant={"ghost"}
-              disabled={isDeletePending}
-              onClick={() => deleteSinglePost(cardProp.id)}
-            >
-              <Trash className="stroke-red-500" />
-            </Button>
+            {cardProp.User.id === user.userId && (
+              <CreatePost
+                isCreate={false}
+                postContent={cardProp.content}
+                postId={cardProp.id}
+              />
+            )}
+            {cardProp.User.id === user.userId && (
+              <Button
+                className="h-3 w-3 hover:bg-transparent"
+                variant={"ghost"}
+                disabled={isDeletePending}
+                onClick={() => deleteSinglePost(cardProp.id)}
+              >
+                <Trash className="stroke-red-500" />
+              </Button>
+            )}
           </div>
           {/* <div className="flex mr-2 text-gray-700 text-sm">
             <svg

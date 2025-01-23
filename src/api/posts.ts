@@ -17,6 +17,6 @@ export const createPostApi= (createPostData: PostInputData) =>
   apiRequest(api.post(`/posts`, createPostData));
 
 export const updatePostApi = (updatePostData: UpdatePostInputData) =>
-  apiRequest(api.patch(`/posts`, updatePostData));
+  apiRequest(api.patch(`/posts/${updatePostData.id}`, updatePostData));
 
 export const deletePostApi = (id: string) => apiRequest(api.delete(`/posts/${id}`));
