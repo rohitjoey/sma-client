@@ -1,17 +1,43 @@
 import { PostResponse } from "@/lib/typedef";
 import { format, formatDistance } from "date-fns";
-import DOMPurify from "dompurify";
-import parse from "html-react-parser";
+import { Heart, Trash } from "lucide-react";
+import { Button } from "./ui/button";
+import { useMutation } from "@tanstack/react-query";
+import {  deletePostApi, updatePostApi, UpdatePostInputData } from "@/api/posts";
+import toast from "react-hot-toast";
 
 const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
-  console.log(cardProp.content);
-  const sanitizedData = DOMPurify.sanitize(cardProp.content);
-  console.log(parse(sanitizedData));
+  const {
+    isPending,
+    error,
+    data,
+    mutate: updateSinglePost,
+  } = useMutation({
+    mutationKey: ["updateAPost"],
+    mutationFn: (updatePostData: UpdatePostInputData) =>
+      updatePostApi(updatePostData),
+    onError:()=>{
+      toast.error("Error while updating post")
+    }
+  });
+
+  const {
+    isPending:isDeletePending,
+    mutate: deleteSinglePost,
+  } = useMutation({
+    mutationKey: ["deleteAPost"],
+    mutationFn: (id: string) =>
+      deletePostApi(id),
+    onError:()=>{
+      toast.error("Error while deleting post")
+    }
+  });
+
   return (
     <div className="bg-teal-100 border-2 shadow-lg rounded-lg max-w-md md:max-w-2xl p-5 h-max">
       <div className="">
         <div className="flex items-center justify-between">
-        <div dangerouslySetInnerHTML={{ __html: sanitizedData }} />
+          {cardProp.content}
           <div className="px-4 text-sm text-gray-700">
             {formatDistance(cardProp.createdAt, new Date(), {
               addSuffix: true,
@@ -24,9 +50,20 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
         <p className="text-gray-700 text-xs">
           Joined {format(cardProp.User.createdAt, "do MMM yyyy")}
         </p>
-        <div className="mt-4 flex items-center">
-          <div className="flex mr-2 text-gray-700 text-sm">
-            <svg
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex mr-2 text-gray-700 text-sm ">
+            <Button
+              className="h-3 w-3 hover:bg-transparent"
+              variant={"ghost"}
+              onClick={() => updateSinglePost({ id: cardProp.id, like: true })}
+              disabled={isPending}
+            >
+              <Heart className="stroke-red-500" />
+            </Button>
+            <span>{cardProp.likesCount}</span>
+          </div>
+          <div>
+            {/* <svg
               fill="none"
               viewBox="0 0 24 24"
               className="w-4 h-4 mr-1"
@@ -38,8 +75,16 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
                 strokeWidth="2"
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
-            </svg>
-            <span>{cardProp.likesCount}</span>
+            </svg> */}
+
+            <Button
+              className="h-3 w-3 hover:bg-transparent"
+              variant={"ghost"}
+              disabled={isDeletePending}
+              onClick={() => deleteSinglePost(cardProp.id)}
+            >
+              <Trash className="stroke-red-500" />
+            </Button>
           </div>
           {/* <div className="flex mr-2 text-gray-700 text-sm">
             <svg

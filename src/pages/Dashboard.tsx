@@ -15,7 +15,6 @@ const Dashboard = () => {
     queryKey: ["posts"],
     queryFn: getPosts,
   });
-  console.log(data);
 
   return (
     <>

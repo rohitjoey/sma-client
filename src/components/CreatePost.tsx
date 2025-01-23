@@ -3,18 +3,17 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import PostEditor from "./PostEditor";
 
 export function CreatePost() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button className="h-32 bg-teal-100 text-black hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl">
           Create Post
@@ -27,7 +26,10 @@ export function CreatePost() {
             Create a new post to make it available to dashboard.
           </DialogDescription>
         </DialogHeader>
-        <PostEditor />
+        <PostEditor
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+        />
       </DialogContent>
     </Dialog>
   );

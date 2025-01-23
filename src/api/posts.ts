@@ -1,4 +1,22 @@
 import api from "@/config/axios";
 import { apiRequest } from "@/lib/utils";
 
+export interface PostInputData {
+  content: string;
+}
+
+export interface UpdatePostInputData {
+  id: string;
+  content?: string;
+  like?: boolean;
+}
+
 export const getPosts = () => apiRequest(api.get(`/posts`));
+
+export const createPostApi= (createPostData: PostInputData) =>
+  apiRequest(api.post(`/posts`, createPostData));
+
+export const updatePostApi = (updatePostData: UpdatePostInputData) =>
+  apiRequest(api.patch(`/posts`, updatePostData));
+
+export const deletePostApi = (id: string) => apiRequest(api.delete(`/posts/${id}`));
