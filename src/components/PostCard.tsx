@@ -7,44 +7,17 @@ import { deletePostApi, updatePostApi, UpdatePostInputData } from "@/api/posts";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/auth";
 import { CreatePost } from "./CreatePost";
+import { useUpdatePostMutation } from "@/hooks/updatePost";
 
 const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
   const queryClient = useQueryClient();
+
   const {
-    isPending,
-    error,
     data,
-    mutate: updateSinglePost,
-  } = useMutation({
-    mutationKey: ["updateAPost"],
-    mutationFn: (updatePostData: UpdatePostInputData) =>
-      updatePostApi(updatePostData),
-    onMutate: async ({ id: postId }) => {
-      await queryClient.cancelQueries({ queryKey: "posts" });
-
-      // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData<PostResponse[]>(["posts"]);
-
-      // Optimistically update the cache
-      queryClient.setQueryData<PostResponse[]>(["posts"], (oldPosts) =>
-        oldPosts?.map((post) =>
-          post.id === postId
-            ? { ...post, likesCount: post.likesCount + 1 }
-            : post
-        )
-      );
-
-      // Return a context object with the snapshot value
-      return { previousPosts };
-    },
-    onError: (err, { id: postId }, context) => {
-      if (context?.previousPosts) {
-        queryClient.setQueryData(["posts"], context.previousPosts);
-      }
-
-      toast.error("Error while updating post");
-    },
-  });
+    error,
+    isPending,
+    mutate: postUpdate,
+  } = useUpdatePostMutation();
 
   const { isPending: isDeletePending, mutate: deleteSinglePost } = useMutation({
     mutationKey: ["deleteAPost"],
@@ -81,7 +54,7 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
             <Button
               className="h-3 w-3 hover:bg-transparent"
               variant={"ghost"}
-              onClick={() => updateSinglePost({ id: cardProp.id, like: true })}
+              onClick={() => postUpdate({ id: cardProp.id, like: true })}
               disabled={isPending}
             >
               <Heart className="stroke-red-500" />

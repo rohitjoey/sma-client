@@ -25,9 +25,7 @@ export function CreatePost({
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         {isCreate ? (
-          <Button className="h-32 bg-teal-100 text-black hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl">
-            Create post
-          </Button>
+          <Button size={"lg"}>Create post</Button>
         ) : (
           <Button className="h-3 w-3 hover:bg-transparent" variant={"ghost"}>
             <Edit className="stroke-red-500" />

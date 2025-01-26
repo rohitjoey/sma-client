@@ -2,13 +2,15 @@ import { getUserData } from "@/api/users";
 import { useAuth } from "@/context/auth";
 import { User } from "@/lib/typedef";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import { CreatePost } from "./CreatePost";
 
 const NavBar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const { data: userData, isLoading } = useQuery<User>({
     queryKey: ["userData", user?.userId],
@@ -30,9 +32,15 @@ const NavBar = () => {
       </div>
       <div className="flex gap-3 ">
         {user.isAuthenticated ? (
-          <Button size={"lg"} asChild onClick={logout}>
-            <Link to="/">Log out</Link>
-          </Button>
+          <>
+            <CreatePost isCreate={true} postContent="" />
+            <Button size={"lg"} onClick={() => navigate("/chat-screen")}>
+              Chat
+            </Button>
+            <Button size={"lg"} asChild onClick={logout}>
+              <Link to="/">Log out</Link>
+            </Button>
+          </>
         ) : (
           <>
             {(currentPath == "/register" || currentPath == "/") && (

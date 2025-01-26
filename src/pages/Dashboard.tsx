@@ -1,26 +1,45 @@
-import { Button } from "@/components/ui/button";
-import ChatComponent from "@/components/ui/Chat";
-import { CreatePost } from "@/components/CreatePost";
-import PostCard from "@/components/PostCard";
-import { useNavigate } from "react-router-dom";
-import PostCardLoadMore from "@/components/PostCardLoadMore";
-import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "@/api/posts";
+import PostCard from "@/components/PostCard";
+import PostCardLoadMore from "@/components/PostCardLoadMore";
+import { Input } from "@/components/ui/input";
 import { PostResponse } from "@/lib/typedef";
+import { useQuery } from "@tanstack/react-query";
+import { Ghost } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
 
   const { isPending, error, data, isLoading } = useQuery<PostResponse[]>({
-    queryKey: ["posts"],
-    queryFn: getPosts,
+    queryKey: ["posts", debouncedSearchTerm],
+    queryFn: () => getPosts(debouncedSearchTerm),
   });
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
   return (
-    <>
+    <div className="flex flex-col  mt-4 h-full w-full">
+      <div className="flex flex-col mt-4 items-center justify-center">
+        <Input
+          className="max-w-2xl border-2 border-gray-300"
+          placeholder="Search posts..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        ></Input>
+      </div>
+
       {isLoading ? (
-        <div className="flex items-center justify-cente flex-col">
-          <div className="flex items-center">
+        <div className="flex items-center justify-center flex-col h-full">
+          <div className="flex items-center ">
             <span className="text-3xl mr-4">Loading</span>
             <svg
               className="animate-spin h-8 w-8 text-gray-800"
@@ -45,23 +64,27 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 h-[calc(100vh-72px)] w-full p-5 gap-6 ">
-          {data &&
-            data.map((post) => <PostCard key={post.id} cardProp={post} />)}
-          {data && data.length >= 10 ? <PostCardLoadMore /> : null}
-          <div className="flex gap-6 w-max">
-            <CreatePost isCreate={true} postContent="" />
-            <Button
-              onClick={() => navigate("/chat-screen")}
-              className="h-32 bg-teal-100 text-black *:hover:bg-black hover:text-white w-max text-xl md:text-2xl lg:text-3xl "
-            >
-              Chat
-            </Button>
-          </div>
-        </div>
+        <>
+          {data && data?.length ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2  w-full p-5 gap-6 ">
+              {data.map((post) => (
+                <PostCard key={post.id} cardProp={post} />
+              ))}
+              {data && data.length >= 10 ? <PostCardLoadMore /> : null}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center flex-col h-full">
+              <div className="flex items-center ">
+                <Ghost className="h-8 w-8 mr-4" />
+                <span className="text-3xl mr-4">
+                  No data found please search again
+                </span>
+              </div>
+            </div>
+          )}
+        </>
       )}
-    </>
-    // <ChatComponent/>
+    </div>
   );
 };
 

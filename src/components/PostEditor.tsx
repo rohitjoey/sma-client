@@ -10,6 +10,8 @@ import toast, { Toaster } from "react-hot-toast";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { PostResponse } from "@/lib/typedef";
+import { useUpdatePostMutation } from "@/hooks/updatePost";
 
 const PostEditor = ({
   isDialogOpen,
@@ -43,22 +45,12 @@ const PostEditor = ({
     },
   });
 
-  const { isPending: isUpdatePending, mutate: updatePostMutation } =
-    useMutation({
-      mutationKey: ["updatePostContent"],
-      mutationFn: (updatePostData: UpdatePostInputData) =>
-        updatePostApi({
-          content: updatePostData.content,
-          id: updatePostData.id,
-        }),
-      onSuccess: () => {
-        toast.success("Post updated successfully");
-        // queryClient.invalidateQueries({ queryKey: ["posts"] });
-      },
-      onError: (error: any) => {
-        handleMutationError(error);
-      },
-    });
+  const {
+    data,
+    error,
+    isPending: isUpdatePending,
+    mutate: updatePostMutation,
+  } = useUpdatePostMutation();
 
   const handleMutationError = (error: any) => {
     if (Array.isArray(error.message)) {
