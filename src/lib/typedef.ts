@@ -26,3 +26,8 @@ export interface PostResponse extends BaseType {
   likesCount: number;
   User: User;
 }
+
+// export interface PostResponsePagination {
+//   posts: PostResponse[];
+//   nextCursor?: string;
+// }

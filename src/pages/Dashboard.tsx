@@ -3,18 +3,20 @@ import PostCard from "@/components/PostCard";
 import PostCardLoadMore from "@/components/PostCardLoadMore";
 import { Input } from "@/components/ui/input";
 import { PostResponse } from "@/lib/typedef";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Ghost } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+  const [cursor, setCursor] = useState<string>("");
 
-  const { isPending, error, data, isLoading } = useQuery<PostResponse[]>({
-    queryKey: ["posts", debouncedSearchTerm],
-    queryFn: () => getPosts(debouncedSearchTerm),
-  });
+  const { isPending, error, data, isLoading } =
+    useQuery<PostResponse[]>({
+      queryKey: ["posts", debouncedSearchTerm],
+      queryFn: () => getPosts({ searchTerm: debouncedSearchTerm }),
+    });
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -70,7 +72,7 @@ const Dashboard = () => {
               {data.map((post) => (
                 <PostCard key={post.id} cardProp={post} />
               ))}
-              {data && data.length >= 10 ? <PostCardLoadMore /> : null}
+              {/* {data && data?.length >= 10 ? <PostCardLoadMore /> : null} */}
             </div>
           ) : (
             <div className="flex items-center justify-center flex-col h-full">

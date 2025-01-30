@@ -11,9 +11,17 @@ export interface UpdatePostInputData {
   like?: boolean;
 }
 
-export const getPosts = (searchTerm:string) => {
-  const url = searchTerm ? `/posts?search=${searchTerm}` : "/posts";
-  return apiRequest(api.get(url));
+interface QueryParams {
+  [key: string]: string;
+}
+
+export const getPosts = (queryParams: QueryParams) => {
+  let params: QueryParams = {};
+  console.log(queryParams.searchTerm);
+  if (queryParams.searchTerm) params["search"] = queryParams.searchTerm;
+  // if (queryParams.cursor) params["cursor"] = queryParams.cursor;
+  // console.log(params)
+  return apiRequest(api.get("/posts", { params }));
 };
 
 export const createPostApi = (createPostData: PostInputData) =>
