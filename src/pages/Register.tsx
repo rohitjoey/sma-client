@@ -61,9 +61,9 @@ const Register = () => {
             {...register("gender")}
             className="rounded-md h-12 pl-4 focus:border-gray-400 border-2 focus:outline-none text-sm"
           >
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="other">Other</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
