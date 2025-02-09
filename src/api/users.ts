@@ -13,10 +13,10 @@ export interface LoginInputData {
 }
 
 export const registerUserApi = (registerData: UserRegisterInputData) =>
-  apiRequest(api.post("/users/register", registerData));
+  apiRequest(api.post("/auth/register", registerData));
 
 export const loginUserApi = (loginData: LoginInputData) =>
-  apiRequest(api.post("/users/login", loginData));
+  apiRequest(api.post("/auth/login", loginData));
 
 export const getUserData = (userId: string) =>
-  apiRequest(api.get(`/users/${userId}`));
+  apiRequest(api.get(`/auth/users/${userId}`));

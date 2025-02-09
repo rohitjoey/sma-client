@@ -75,7 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (token) {
       try {
         const decoded = jwtDecode<JwtPayload>(token);
-        dispatch({ type: "INITIALIZE", payload: { userId: decoded.sub } });
+        console.log("decoded: ", decoded)
+        dispatch({ type: "INITIALIZE", payload: { userId: decoded.data.id} });
       } catch (error) {
         console.error("Invalid token", error);
         localStorage.removeItem("token");

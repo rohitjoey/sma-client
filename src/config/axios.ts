@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   // baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  baseURL: "http://localhost:5000/api",
+  baseURL: "http://localhost:3001/api",
 });
 
 api.interceptors.request.use(

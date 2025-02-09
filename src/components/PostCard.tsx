@@ -31,7 +31,7 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
     },
   });
   const { user } = useAuth();
-
+  
   return (
     <div className="bg-teal-100 border-2 shadow-lg rounded-lg max-w-md md:max-w-2xl p-5 h-max">
       <div className="">
@@ -44,7 +44,7 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
           </div>
         </div>
         <p className="mt-3 text-gray-700 text-md">
-          <span className="text-xs">PostedBy</span>:{cardProp.User.fullname}
+          <span className="text-xs">PostedBy</span>:{cardProp.User.fullName}
         </p>
         <p className="text-gray-700 text-xs">
           Joined {format(cardProp.User.createdAt, "do MMM yyyy")}
