@@ -17,7 +17,7 @@ interface QueryParams {
 
 export const getPosts = (queryParams: QueryParams) => {
   let params: QueryParams = {};
-  console.log(queryParams.searchTerm);
+  // console.log(queryParams.searchTerm);
   if (queryParams.searchTerm) params["search"] = queryParams.searchTerm;
   // if (queryParams.cursor) params["cursor"] = queryParams.cursor;
   // console.log(params)

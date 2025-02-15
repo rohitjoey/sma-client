@@ -5,7 +5,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useReducer
+  useReducer,
 } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -47,6 +47,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         },
       };
     case "LOGOUT":
+      localStorage.removeItem("token");
       return {
         user: { userId: undefined, isAuthenticated: false },
       };
@@ -74,9 +75,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     if (token) {
       try {
+        if (!token) {
+          dispatch({ type: "LOGOUT" });
+        }
         const decoded = jwtDecode<JwtPayload>(token);
+        if (!decoded.exp) {
+          dispatch({ type: "LOGOUT" });
+        }
+        const isExpired = decoded.exp! < Date.now() / 1000;
+        if (isExpired) {
+          dispatch({ type: "LOGOUT" });
+        }
         dispatch({ type: "INITIALIZE", payload: { userId: decoded.sub } });
       } catch (error) {
+        dispatch({ type: "LOGOUT" });
         console.error("Invalid token", error);
         localStorage.removeItem("token");
       }

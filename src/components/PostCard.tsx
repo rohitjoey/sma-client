@@ -44,7 +44,7 @@ const PostCard = ({ cardProp }: { cardProp: PostResponse }) => {
           </div>
         </div>
         <p className="mt-3 text-gray-700 text-md">
-          <span className="text-xs">PostedBy</span>:{cardProp.User.fullname}
+          <span className="text-xs">PostedBy:{cardProp.User.fullName}</span>
         </p>
         <p className="text-gray-700 text-xs">
           Joined {format(cardProp.User.createdAt, "do MMM yyyy")}

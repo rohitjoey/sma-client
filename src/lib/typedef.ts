@@ -11,7 +11,7 @@ export enum GenderEnum {
 }
 
 export interface User extends BaseType {
-  fullname: string;
+  fullName: string;
   gender: GenderEnum;
   email: string;
 }

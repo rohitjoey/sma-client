@@ -11,13 +11,14 @@ const NavBar = () => {
   const currentPath = location.pathname;
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  const { data: userData, isLoading } = useQuery<User>({
+  
+  const { data: userData, isLoading } = useQuery({
     queryKey: ["userData", user?.userId],
     queryFn: () => getUserData(user?.userId!),
     enabled: !!user?.userId, // Only run query if user exists
     retry: true,
   });
+
 
   return (
     <div className="bg-teal-500 py-4 flex justify-between px-4">
@@ -26,7 +27,7 @@ const NavBar = () => {
           <Link to={user.isAuthenticated ? "/dashboard" : "/"}>
             {isLoading || !userData
               ? "Social Media APP"
-              : `Welcome, ${userData?.fullname}`}
+              : `Welcome, ${userData?.user?.fullName}`}
           </Link>
         </p>
       </div>
