@@ -18,5 +18,8 @@ export const registerUserApi = (registerData: UserRegisterInputData) =>
 export const loginUserApi = (loginData: LoginInputData) =>
   apiRequest(api.post("/auth/login", loginData));
 
-export const getUserData = (userId: string) =>
-  apiRequest(api.get(`/auth/users/${userId}`));
+export const getUserData = async (userId: string) =>{
+  const {user} = await apiRequest(api.get(`/auth/users/${userId}`));
+  return user;
+
+}

@@ -18,7 +18,7 @@ const NavBar = () => {
     enabled: !!user?.userId, // Only run query if user exists
     retry: true,
   });
-
+  console.log("userData: ", userData)
   return (
     <div className="bg-teal-500 py-4 flex justify-between px-4">
       <div className="ml-6">
@@ -26,7 +26,7 @@ const NavBar = () => {
           <Link to={user.isAuthenticated ? "/dashboard" : "/"}>
             {isLoading || !userData
               ? "Social Media APP"
-              : `Welcome, ${userData?.fullname}`}
+              : `Welcome, ${userData?.fullName}`}
           </Link>
         </p>
       </div>

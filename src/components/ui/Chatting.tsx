@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
 
 const socket = io("http://localhost:3001/"); // Connect to backend server
 
 export default function Chatting() {
   const [message, setMessage] = useState<any>("");
   const [messages, setMessages] = useState<any[]>([]);
+
+  const { user } = useAuth();
+
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
@@ -27,7 +31,7 @@ export default function Chatting() {
 
   const sendMessage = () => {
     if (message.trim()) {
-      socket.emit("send_message", message, socket.id);
+      socket.emit("send_message", message, user.userId);
       setMessage("");
     }
   };
